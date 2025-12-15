@@ -1,0 +1,68 @@
+name: 'Moka Build & Publish'
+description: 'Clones the child repo and Moka engine, copies assets, builds, and publishes to GitHub Pages.'
+inputs:
+  github_token:
+    description: 'GitHub Token for publishing'
+    required: true
+  moka_repo:
+    description: 'Repository of the Moka engine'
+    default: 'fiches-me/moka'
+    required: false
+
+runs:
+  using: "composite"
+  steps:
+    - name: Checkout Child Repo
+      uses: actions/checkout@v4
+      with:
+        path: 'child-repo'
+
+    - name: Checkout Moka Engine
+      uses: actions/checkout@v4
+      with:
+        repository: ${{ inputs.moka_repo }}
+        path: 'moka-engine'
+
+    - name: Setup PNPM
+      uses: pnpm/action-setup@v2
+      with:
+        version: 9
+
+    - name: Setup Node
+      uses: actions/setup-node@v4
+      with:
+        node-version: 20
+        cache: 'pnpm'
+        cache-dependency-path: 'moka-engine/pnpm-lock.yaml'
+
+    - name: Install Dependencies
+      shell: bash
+      run: |
+        cd moka-engine
+        pnpm install
+
+    - name: Copy Assets
+      shell: bash
+      run: |
+        # Copy logo from child repo to moka engine
+        if [ -f "child-repo/.moka/logo.ico" ]; then
+          echo "Copying logo from child-repo/.moka/logo.ico to moka-engine/public/favicon.png"
+          cp child-repo/.moka/logo.ico moka-engine/public/favicon.png
+        else
+          echo "No logo found at child-repo/.moka/logo.ico, skipping."
+        fi
+
+        # You might want to copy other content here as well, e.g.:
+        # cp -r child-repo/content/* moka-engine/content/
+
+    - name: Build Moka
+      shell: bash
+      run: |
+        cd moka-engine
+        pnpm run build
+
+    - name: Publish to GitHub Pages
+      uses: peaceiris/actions-gh-pages@v3
+      with:
+        github_token: ${{ inputs.github_token }}
+        publish_dir: ./moka-engine/build/client
