@@ -1,5 +1,7 @@
 name: 'Moka Build & Publish'
 description: 'Clones the child repo and Moka engine, copies assets, builds, and publishes to GitHub Pages.'
+icon: book-open
+color: yellow
 inputs:
   github_token:
     description: 'GitHub Token for publishing'
