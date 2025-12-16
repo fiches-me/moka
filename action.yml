@@ -56,8 +56,7 @@ runs:
         cd moka-engine
         npm run build
 
-    - name: Publish to GitHub Pages
-      uses: peaceiris/actions-gh-pages@v3
+    - name: Upload artifact
+      uses: actions/upload-pages-artifact@v3
       with:
-        github_token: ${{ inputs.github_token }}
-        publish_dir: ./moka-engine/build/client
+        path: moka-engine/build/client
