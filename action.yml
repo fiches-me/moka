@@ -36,19 +36,37 @@ runs:
         cd moka-engine
         npm install
 
-    - name: Copy Assets
+    - name: Copy & Clean Assets
       shell: bash
       run: |
         # Copy logo from child repo to moka engine
-        if [ -f "child-repo/.moka/logo.ico" ]; then
-          echo "Copying logo from child-repo/.moka/logo.ico to moka-engine/public/favicon.png"
-          cp child-repo/.moka/logo.ico moka-engine/public/favicon.png
+        if [ -f "moka-engine/content/docs/.moka/logo.ico" ]; then
+          echo "Copying logo from moka-engine/content/docs/.moka/logo.ico to moka-engine/public/favicon.png"
+          cp moka-engine/content/docs/.moka/logo.ico moka-engine/public/favicon.ico
         else
-          echo "No logo found at child-repo/.moka/logo.ico, skipping."
+          echo "No logo found at moka-engine/content/docs/.moka/logo.ico, skipping."
+        fi
+        if [ -f "moka-engine/content/docs/README.md" ]; then
+          echo "Removing file from moka-engine/content/docs/README.md"
+          rm moka-engine/content/docs/README.md
+        else
+          echo "No file found at moka-engine/content/docs/README.md, skipping."
         fi
 
-        # You might want to copy other content here as well, e.g.:
-        # cp -r child-repo/content/* moka-engine/content/
+        recurseMDtoMDX() {
+          for file in "$1"/*; do
+            if [ -d "$file" ]; then
+              recurseMDtoMDX "$file"
+            else
+              if [[ $file == *.md ]]; then
+                mv "$file" "${file%.*}.mdx"
+              fi
+            fi
+          done
+        }
+
+        recurseMDtoMDX "moka-engine/content/docs"
+
 
     - name: Build Moka
       shell: bash
