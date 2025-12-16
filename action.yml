@@ -1,4 +1,4 @@
-name: 'Moka Build & Publish'
+name: 'Build & Publish with Moka'
 description: 'Clones the child repo and Moka engine, copies assets, builds, and publishes to GitHub Pages.'
 icon: 'book-open'
 color: 'yellow'
@@ -35,7 +35,6 @@ runs:
       with:
         node-version: 20
         cache: 'pnpm'
-        cache-dependency-path: 'moka-engine/pnpm-lock.yaml'
 
     - name: Install Dependencies
       shell: bash
