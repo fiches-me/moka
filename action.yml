@@ -14,16 +14,16 @@ inputs:
 runs:
   using: "composite"
   steps:
-    - name: Checkout Child Repo
-      uses: actions/checkout@v4
-      with:
-        path: 'child-repo'
-
     - name: Checkout Moka Engine
       uses: actions/checkout@v4
       with:
         repository: ${{ inputs.moka_repo }}
         path: 'moka-engine'
+
+    - name: Checkout Child Repo
+      uses: actions/checkout@v4
+      with:
+        path: 'moka-engine/content/docs'
 
     - name: 'Setup Node'
       uses: actions/setup-node@v6
